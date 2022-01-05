@@ -40,7 +40,7 @@
   <div class="main-nav-links hidden">
     /<a class="nav-link" href="#" id="nav-submit-story">submit</a>
     /<a class="nav-link" href="#" id="nav-favorites">favorites</a>
-    /<a class="nav-link" href="#" id="nav-my-stories">my stories</a>
+    /<a class="nav-link" href="#" id="nav-user-stories">my stories</a>
     /
   </div>
   <div class="nav-right">
@@ -74,6 +74,12 @@
 
   <!-- List of all stories -->
   <ol id="all-stories-list" class="stories-list"></ol>
+
+  <!-- List of stories the user has favorited -->
+  <ol id="favorite-stories-list" class="hidden stories-list"></ol>
+
+  <!-- List of stories submitted by the user -->
+  <ol id="user-stories-list" class="hidden stories-list"></ol>
 
 </section>
 
@@ -116,6 +122,18 @@
     </div>
     <button type="submit">create account</button>
   </form>
+</section>
+
+<!-- User profile -->
+<section id="user-profile" class="hidden">
+  <div class="user-profile-div container">
+    <h3>User Info</h3>
+    <section>
+      <div>Name: <span id="user-profile-name"></span></div>
+      <div>Username: <span id="user-profile-username"></span></div>
+      <div>Account Created On: <span id="user-profile-creation-date"></span></div>
+    </section>
+  </div>
 </section>
 
 <!-- Library JS & our JS -->

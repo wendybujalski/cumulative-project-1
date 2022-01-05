@@ -21,10 +21,13 @@ async function login(evt) {
   // which we'll make the globally-available, logged-in user.
   currentUser = await User.login(username, password);
 
+  if(currentUser === null) {
+    alert("Your credentials were not entered correctly, please try again.");
+  } else {
+    saveUserCredentialsInLocalStorage();
+    updateUIOnUserLogin();
+  }
   $loginForm.trigger("reset");
-
-  saveUserCredentialsInLocalStorage();
-  updateUIOnUserLogin();
 }
 
 $loginForm.on("submit", login);
@@ -43,8 +46,12 @@ async function signup(evt) {
   // which we'll make the globally-available, logged-in user.
   currentUser = await User.signup(username, password, name);
 
-  saveUserCredentialsInLocalStorage();
-  updateUIOnUserLogin();
+  if(currentUser === null) {
+    alert("That username is taken, please try another.");
+  } else {
+    saveUserCredentialsInLocalStorage();
+    updateUIOnUserLogin();
+  }
 
   $signupForm.trigger("reset");
 }
@@ -110,7 +117,21 @@ function saveUserCredentialsInLocalStorage() {
 function updateUIOnUserLogin() {
   console.debug("updateUIOnUserLogin");
 
+  hidePageComponents();
+
+  putStoriesOnPage();
   $allStoriesList.show();
 
   updateNavOnLogin();
+  updateUserProfile();
+}
+
+/* Update the user profile with the current user's info. */
+
+function updateUserProfile() {
+  console.debug("updateUserProfile");
+
+  $("#user-profile-name").text(currentUser.name);
+  $("#user-profile-username").text(currentUser.username);
+  $("#user-profile-creation-date").text(currentUser.createdAt.slice(0, 10));
 }

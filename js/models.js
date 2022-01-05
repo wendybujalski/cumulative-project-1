@@ -83,6 +83,22 @@ class StoryList {
 
     return storyObj;
   }
+
+  /* Delete the given story from the API and remove it from all lists. */
+
+  async removeStory(user, id) {
+    const token = user.loginToken;
+
+    await axios({
+      url: `${BASE_URL}/stories/${id}`,
+      method: "DELETE",
+      data: { token }
+    });
+
+    this.stories = this.stories.filter(s => s.storyId !== id);
+    user.ownStories = user.ownStories.filter(s => s.storyId !== id);
+    user.favorites = user.favorites.filter(s => s.storyId !== id);
+  }
 }
 
 
@@ -121,54 +137,66 @@ class User {
    * - username: a new username
    * - password: a new password
    * - name: the user's full name
+   * 
+   * Returns null if the attempt to register the user failed.
    */
 
   static async signup(username, password, name) {
-    const response = await axios({
-      url: `${BASE_URL}/signup`,
-      method: "POST",
-      data: { user: { username, password, name } },
-    });
-
-    let { user } = response.data
-
-    return new User(
-      {
-        username: user.username,
-        name: user.name,
-        createdAt: user.createdAt,
-        favorites: user.favorites,
-        ownStories: user.stories
-      },
-      response.data.token
-    );
+    try {
+      const response = await axios({
+        url: `${BASE_URL}/signup`,
+        method: "POST",
+        data: { user: { username, password, name } },
+      });
+  
+      let { user } = response.data
+  
+      return new User(
+        {
+          username: user.username,
+          name: user.name,
+          createdAt: user.createdAt,
+          favorites: user.favorites,
+          ownStories: user.stories
+        },
+        response.data.token
+      );
+    } catch(err) {
+      return null;
+    }
   }
 
   /** Login in user with API, make User instance & return it.
 
    * - username: an existing user's username
    * - password: an existing user's password
+   * 
+   * Returns null if the attempt to log in failed.
    */
 
   static async login(username, password) {
-    const response = await axios({
-      url: `${BASE_URL}/login`,
-      method: "POST",
-      data: { user: { username, password } },
-    });
+    try {
+      const response = await axios({
+        url: `${BASE_URL}/login`,
+        method: "POST",
+        data: { user: { username, password } },
+      });
 
-    let { user } = response.data;
+      let { user } = response.data;
 
-    return new User(
-      {
-        username: user.username,
-        name: user.name,
-        createdAt: user.createdAt,
-        favorites: user.favorites,
-        ownStories: user.stories
-      },
-      response.data.token
-    );
+      return new User(
+        {
+          username: user.username,
+          name: user.name,
+          createdAt: user.createdAt,
+          favorites: user.favorites,
+          ownStories: user.stories
+        },
+        response.data.token
+      );
+    } catch(err) {
+      return null;
+    }
   }
 
   /** When we already have credentials (token & username) for a user,
@@ -199,5 +227,35 @@ class User {
       console.error("loginViaStoredCredentials failed", err);
       return null;
     }
+  }
+
+  /* Add the given story to the user's favorites list and update the API accordingly. */
+
+  async addFavorite(story) {
+    this.favorites.push(story);
+    await this.updateFavorite("POST", story);
+  }
+
+  /* Remove the given story from the user's favorites list and update the API accordingly. */
+
+  async removeFavorite(story) {
+    this.favorites = this.favorites.filter(s => s.storyId !== story.storyId);
+    await this.updateFavorite("DELETE", story);
+  }
+
+  /** Update the API with a favorite or unfavorite.
+   * callType: either "POST" for adding a favorite or "DELETE" for removing it.
+   * story: the story instance for this API call
+   * */
+  async updateFavorite(callType, story) {
+    await axios({
+      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      method: callType,
+      data: { token: this.loginToken }
+    });
+  }
+
+  isFavorite(story) {
+    return this.favorites.some(s => (s.storyId === story.storyId));
   }
 }

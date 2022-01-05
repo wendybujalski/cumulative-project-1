@@ -36,6 +36,36 @@ function navLoginClick(evt) {
 
 $navLogin.on("click", navLoginClick);
 
+/* Switch to favorites list when logged in user clicks on favorites link. */
+
+function navFavoritesClick(evt) {
+  console.debug("navFavoritesClick", evt);
+  hidePageComponents();
+  displayFavoritesList();
+}
+
+$body.on("click", "#nav-favorites", navFavoritesClick);
+
+/* Switch to user stories list when logged in user clicks on my stories link. */
+
+function navUserStoriesClick(evt) {
+  console.debug("navUserStoriesClick", evt);
+  hidePageComponents();
+  displayUserStoriesList();
+}
+
+$body.on("click", "#nav-user-stories", navUserStoriesClick);
+
+/* Switch to user profile when logged in user clicks on their username. */
+
+function navUserProfileClick(evt) {
+  console.debug("navUserProfileClick");
+  hidePageComponents();
+  $userProfile.show();
+}
+
+$navUser.on("click", navUserProfileClick);
+
 /** When a user first logins in, update the navbar to reflect that. */
 
 function updateNavOnLogin() {

@@ -16,6 +16,10 @@
   margin: 20px 30px;
 }
 
+#favorite-stories-list, #user-stories-list {
+  list-style: none;
+  padding-left: 25px;
+}
 
 /* Individual stories */
 
@@ -36,4 +40,14 @@
 
 .story-user {
   display: block;
+}
+
+.star, .trash {
+  font-size: 1em;
+  margin: 0 3px;
+  cursor: pointer;
+}
+
+.trash:hover {
+  color: red;
 }
